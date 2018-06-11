@@ -1,0 +1,6 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+  package="io.gjg.androidjobscheduler">
+    <uses-sdk
+        android:minSdkVersion="21">
+    </uses-sdk>
+</manifest>
