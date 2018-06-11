@@ -26,22 +26,24 @@ public class AndroidJobScheduler extends JobService {
     static String B_KEY_RESCHEDULE = "reschedule";
     static String B_KEY_INTERVAL = "interval";
     static String B_KEY_DART_CB = "callback";
+    static String B_KEY_ID = "id";
 
-    static void scheduleEvery(Context context, Integer millis, String callback) {
+    static void scheduleEvery(Context context, Integer millis, String callback, Integer id) {
         JobInfo info;
         PersistableBundle bundle = new PersistableBundle();
         bundle.putString(B_KEY_DART_CB, callback);
         bundle.putInt(B_KEY_INTERVAL, millis);
+        bundle.putInt(B_KEY_ID, id);
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
             bundle.putBoolean(B_KEY_RESCHEDULE, false);
-            info = new JobInfo.Builder(42, new ComponentName(context, AndroidJobScheduler.class))
+            info = new JobInfo.Builder(id, new ComponentName(context, AndroidJobScheduler.class))
                     .setBackoffCriteria(10000, JobInfo.BACKOFF_POLICY_LINEAR)
                     .setPeriodic(millis)
                     .setExtras(bundle)
                     .build();
         } else {
             bundle.putBoolean(B_KEY_RESCHEDULE, true);
-            info = new JobInfo.Builder(42, new ComponentName(context, AndroidJobScheduler.class))
+            info = new JobInfo.Builder(id, new ComponentName(context, AndroidJobScheduler.class))
                     .setBackoffCriteria(10000, JobInfo.BACKOFF_POLICY_LINEAR)
                     .setMinimumLatency(millis)
                     .setExtras(bundle)
@@ -49,6 +51,16 @@ public class AndroidJobScheduler extends JobService {
         }
         JobScheduler scheduler = context.getSystemService(JobScheduler.class);
         scheduler.schedule(info);
+    }
+
+    static void cancelJob(Context context, Integer jobId) {
+        JobScheduler scheduler = context.getSystemService(JobScheduler.class);
+        scheduler.cancel(jobId);
+    }
+
+    static void cancelAllJobs(Context context) {
+        JobScheduler scheduler = context.getSystemService(JobScheduler.class);
+        scheduler.cancelAll();
     }
 
     static void setPluginRegistrantCallback(PluginRegistry.PluginRegistrantCallback callback) {
@@ -82,7 +94,8 @@ public class AndroidJobScheduler extends JobService {
         if (extras.getBoolean(B_KEY_RESCHEDULE)) {
             AndroidJobScheduler.scheduleEvery(getApplicationContext(),
                     extras.getInt(B_KEY_INTERVAL),
-                    extras.getString(B_KEY_DART_CB));
+                    extras.getString(B_KEY_DART_CB),
+                    extras.getInt(B_KEY_ID));
         }
         jobFinished(params, false);
         return true;
@@ -90,7 +103,7 @@ public class AndroidJobScheduler extends JobService {
 
     @Override
     public boolean onStopJob(JobParameters params) {
-        Log.i(AndroidJobScheduler.class.getSimpleName(), "Stop");
+        Log.d(AndroidJobScheduler.class.getSimpleName(), "onStopJob");
         return false;
     }
 
@@ -98,10 +111,5 @@ public class AndroidJobScheduler extends JobService {
     public void onCreate() {
         super.onCreate();
         FlutterMain.ensureInitializationComplete(getApplicationContext(), null);
-    }
-
-    @Override
-    public void onDestroy() {
-        Context context = getApplicationContext();
     }
 }

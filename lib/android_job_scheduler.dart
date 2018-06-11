@@ -11,7 +11,7 @@ class AndroidJobScheduler {
     return version;
   }
 
-  static Future<bool> scheduleEvery(Duration every, dynamic Function() function) async {
+  static Future<bool> scheduleEvery(Duration every, int id, dynamic Function() function) async {
     _channel.setMethodCallHandler((MethodCall call) {
       switch (call.method) {
         case 'firedWhileApplicationRunning':
@@ -26,7 +26,15 @@ class AndroidJobScheduler {
       throw 'scheduleEvery failed: The supplied function can only be a top level function or a static method! Class members'
             ' or Closures are not allowed.';
     }
-    return await _channel.invokeMethod('scheduleEvery', [every.inMilliseconds, functionName]);
+    return await _channel.invokeMethod('scheduleEvery', [every.inMilliseconds, functionName, id]);
+  }
+
+  static Future<void> cancelJob(int id) async {
+    return await _channel.invokeMethod('cancelJob', [id]);
+  }
+
+  static Future<void> cancelAllJobs() async {
+    return await _channel.invokeMethod('cancelAllJobs', []);
   }
 }
 

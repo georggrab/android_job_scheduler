@@ -25,6 +25,8 @@ In your project's `android/app/src/main` directory, open the `AndroidManifest.xm
 import 'package:android_job_scheduler/android_job_scheduler.dart';
 ```
 
+#### Installing Jobs
+
 ```dart
 // This MUST be a top level Function or a Static Class Member. It may not be a Class Method
 // or a Closure. Inside this method, you don't have access to anything assuming a running
@@ -38,8 +40,22 @@ void iRunPeriodically() {
 void main() {
     ...
     bool jobIsInstalled =
+        // For every distinct Job you wish to create, set a new JobId.
+        // Calling this Function twice with the same JobId will have no effect.
         await AndroidJobScheduler.scheduleEvery(
-            const Duration(seconds: 10), iRunPeriodically);
+            const Duration(seconds: 10), iRunPeriodically, 42);
+}
+```
+
+#### Canceling Jobs
+
+```dart
+void main() {
+  ...
+  // Cancel a unique Job
+  await AndroidJobScheduler.cancelJob(42);
+  // Cancel all Jobs scheduled by this Application
+  await AndroidJobScheduler.cancelAllJobs();
 }
 ```
 

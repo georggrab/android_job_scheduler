@@ -73,7 +73,7 @@ class _MyAppState extends State<MyApp> {
               child: new Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              new Text(_jobIsInstalled == null? 'Job not installed.' : _jobIsInstalled? 'Job is installed!' : 'Job installation failed!'),
+              new Text(_jobIsInstalled == null? 'Job installation failed!' : _jobIsInstalled? 'Job is installed!' : 'Job is not installed!'),
               new Text('Callback has been called '),
               new Text('$_timesCalled', textScaleFactor: 2.0),
               new Text('times.'),
@@ -87,7 +87,7 @@ class _MyAppState extends State<MyApp> {
                           try {
                             jobIsInstalled =
                                 await AndroidJobScheduler.scheduleEvery(
-                                    const Duration(seconds: 10), yolo);
+                                    const Duration(seconds: 10), 42, yolo);
                           } finally {
                             setState(() {
                               _jobIsInstalled = jobIsInstalled == true;
@@ -98,7 +98,12 @@ class _MyAppState extends State<MyApp> {
                         label: Text('Install Job')),
                     new Container(width: 10.0,),
                     new RaisedButton.icon(
-                        onPressed: () {},
+                        onPressed: () {
+                          AndroidJobScheduler.cancelJob(42);
+                          setState(() {
+                            _jobIsInstalled = false;
+                          });
+                        },
                         icon: const Icon(Icons.delete),
                         label: Text('Uninstall Job')),
                   ]),
