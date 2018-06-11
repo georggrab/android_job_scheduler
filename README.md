@@ -6,7 +6,15 @@ Schedule Jobs using Android's JobScheduler API. This is very much Work in progre
 
 ### Add the Dependency
 
-tbd
+Check the latest Version on [pub](https://pub.dartlang.org/packages/android_job_scheduler#-versions-tab-).
+
+Then, in your `pubspec.yml`:
+
+```yaml
+dependencies:
+  ...
+  android_job_scheduler: ^0.0.1
+```
 
 ### Declare the JobScheduler Service in `AndroidManifest.xml`
 
