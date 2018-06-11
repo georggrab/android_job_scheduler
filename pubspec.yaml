@@ -1,8 +1,11 @@
 name: android_job_scheduler
 description: A new flutter plugin project.
 version: 0.0.1
-author:
-homepage:
+author: Georg Grab <g.j.grab.dev@gmail.com>
+homepage: https://github.com/talkdirty/android_job_scheduler
+
+environment:
+  sdk: ">=1.19.0 <2.0.0"
 
 dependencies:
   flutter:

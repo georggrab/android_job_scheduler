@@ -12,16 +12,16 @@ tbd
 
 In your project's `android/app/src/main` directory, open the `AndroidManifest.xml` and add the following to the `<application />` block:
 
-```
-    <service
-        android:exported="true"
-        android:permission="android.permission.BIND_JOB_SERVICE"
-        android:name="io.gjg.androidjobscheduler.AndroidJobScheduler">
+```xml
+<service
+    android:exported="true"
+    android:permission="android.permission.BIND_JOB_SERVICE"
+    android:name="io.gjg.androidjobscheduler.AndroidJobScheduler">
 ```
 
 ### Usage
 
-```
+```dart
 import 'package:android_job_scheduler/android_job_scheduler.dart';
 ```
 
