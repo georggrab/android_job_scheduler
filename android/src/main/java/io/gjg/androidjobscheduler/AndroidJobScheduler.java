@@ -6,56 +6,30 @@ import android.app.job.JobInfo;
 import android.app.job.JobParameters;
 import android.app.job.JobScheduler;
 import android.app.job.JobService;
-import android.content.ComponentName;
 import android.content.Context;
 import android.os.Build;
 import android.os.PersistableBundle;
-import android.util.Log;
 
-import java.lang.reflect.Field;
 import java.util.List;
 
-import io.flutter.app.FlutterActivity;
 import io.flutter.app.FlutterApplication;
-import io.flutter.app.FlutterPluginRegistry;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.PluginRegistry;
 import io.flutter.view.FlutterMain;
 import io.flutter.view.FlutterNativeView;
 
+import static io.gjg.androidjobscheduler.AndroidJobSchedulerUtils.B_KEY_DART_CB;
+
 @TargetApi(Build.VERSION_CODES.M)
 public class AndroidJobScheduler extends JobService {
     public static MethodChannel callbackMethodChannel;
+
     private static PluginRegistry.PluginRegistrantCallback pluginRegistrantCallback;
     private static String TAG = AndroidJobScheduler.class.getSimpleName();
-    private static String B_KEY_RESCHEDULE = "reschedule";
-    private static String B_KEY_INTERVAL = "interval";
-    private static String B_KEY_DART_CB = "callback";
-    private static String B_KEY_ID = "id";
 
-    public static void scheduleEvery(Context context, Integer millis, String callback, Integer id) {
-        JobInfo info;
-        PersistableBundle bundle = new PersistableBundle();
-        bundle.putString(B_KEY_DART_CB, callback);
-        bundle.putInt(B_KEY_INTERVAL, millis);
-        bundle.putInt(B_KEY_ID, id);
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
-            bundle.putBoolean(B_KEY_RESCHEDULE, false);
-            info = new JobInfo.Builder(id, new ComponentName(context, AndroidJobScheduler.class))
-                    .setBackoffCriteria(10000, JobInfo.BACKOFF_POLICY_LINEAR)
-                    .setPeriodic(millis)
-                    .setExtras(bundle)
-                    .build();
-        } else {
-            bundle.putBoolean(B_KEY_RESCHEDULE, true);
-            info = new JobInfo.Builder(id, new ComponentName(context, AndroidJobScheduler.class))
-                    .setBackoffCriteria(10000, JobInfo.BACKOFF_POLICY_LINEAR)
-                    .setMinimumLatency(millis)
-                    .setExtras(bundle)
-                    .build();
-        }
+    public static void scheduleEvery(Context context, JobInfo jobInfo) {
         JobScheduler scheduler = context.getSystemService(JobScheduler.class);
-        scheduler.schedule(info);
+        scheduler.schedule(jobInfo);
     }
 
     public static void cancelJob(Context context, Integer jobId) {
@@ -101,12 +75,7 @@ public class AndroidJobScheduler extends JobService {
             nativeView.runFromBundle(FlutterMain.findAppBundlePath(context), null,
                     extras.getString(B_KEY_DART_CB), true);
         }
-        if (extras.getBoolean(B_KEY_RESCHEDULE)) {
-            AndroidJobScheduler.scheduleEvery(getApplicationContext(),
-                    extras.getInt(B_KEY_INTERVAL),
-                    extras.getString(B_KEY_DART_CB),
-                    extras.getInt(B_KEY_ID));
-        }
+        AndroidJobScheduler.scheduleEvery(getApplicationContext(), AndroidJobSchedulerUtils.persistableBundleToJobInfo(extras));
         jobFinished(params, false);
         return true;
     }

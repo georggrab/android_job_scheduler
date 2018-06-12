@@ -3,6 +3,8 @@ package io.gjg.androidjobscheduler;
 import android.app.job.JobInfo;
 import android.content.Context;
 import android.os.Build;
+import android.os.Parcel;
+import android.os.PersistableBundle;
 import android.util.Log;
 
 import org.json.JSONArray;
@@ -10,6 +12,7 @@ import org.json.JSONException;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import io.flutter.app.FlutterPluginRegistry;
@@ -46,11 +49,9 @@ public class AndroidJobSchedulerPlugin implements MethodCallHandler {
         }
         if (call.method.equals("scheduleEvery")) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                final ArrayList<?> args = (ArrayList<?>) call.arguments;
-                final Integer every = (Integer) args.get(0);
-                final String funcCallback = (String) args.get(1);
-                final Integer id = (Integer) args.get(2);
-                AndroidJobScheduler.scheduleEvery(this.mContext, every, funcCallback, id);
+                PersistableBundle bundle = AndroidJobSchedulerUtils.serializedDataToPersistableBundle((ArrayList<?>) call.arguments, mContext);
+
+                AndroidJobScheduler.scheduleEvery(this.mContext, AndroidJobSchedulerUtils.persistableBundleToJobInfo(bundle));
                 result.success(true);
             } else {
                 result.success(false);

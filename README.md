@@ -1,4 +1,4 @@
-# android_job_scheduler_example
+# android_job_scheduler
 
 Schedule Jobs using Android's JobScheduler API. This is very much Work in progress. Much of this Plugin is based on the [android_alarm_manager](https://github.com/flutter/plugins/tree/master/packages/android_alarm_manager/) Plugin.
 
@@ -81,7 +81,52 @@ void main() {
 }
 ```
 
-#### Using other Plugins from inside your callback
+### Conditional Job Execution
+Android's JobScheduler allows us to execute Jobs conditionally. 
+
+#### Only execute when Device is charging
+```dart
+await AndroidJobScheduler.scheduleEvery(
+    const Duration(seconds: 10), iRunPeriodically, 42,
+    constraints: [
+          const RequiresCharging(),
+]);
+``` 
+
+#### Only execute with a certain Network connectivity State
+```dart
+await AndroidJobScheduler.scheduleEvery(
+    const Duration(seconds: 10), iRunPeriodically, 42,
+    constraints: [
+          const RequiredNetworkType(requiredType: RequiredNetworkType.NETWORK_TYPE_CELLULAR),
+]);
+``` 
+
+#### Only execute if not on low Storage condition
+```dart
+await AndroidJobScheduler.scheduleEvery(
+    const Duration(seconds: 10), iRunPeriodically, 42,
+    constraints: [
+          const RequiresStorageNotLow()
+]);
+``` 
+
+#### Combinations
+Of course, you can also combine Constraints.
+```dart
+// Only execute when the Device is charging,
+// the Network connection is unmetered,
+// and we have enough storage
+await AndroidJobScheduler.scheduleEvery(
+    const Duration(seconds: 10), downloadTonsOfData, 42,
+    constraints: [
+          const RequiredNetworkType(requiredType: RequiredNetworkType.NETWORK_TYPE_UNMETERED),
+          const RequiresCharging(),
+          const RequiresStorageNotLow()
+]);
+``` 
+
+### Using other Plugins from inside your callback
 
 In order to use other Plugins from inside the Dart Callback, you'll need to enable the Scheduler to register with your Applications Main Plugin Registry. Do this by providing a custom Application Implementation in your Android Code:
 

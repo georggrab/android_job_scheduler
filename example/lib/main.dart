@@ -97,9 +97,15 @@ class _MyAppState extends State<MyApp> {
                         onPressed: () async {
                           try {
                             await AndroidJobScheduler.scheduleEvery(
-                                const Duration(seconds: 10),
+                                const Duration(seconds: 1),
                                 42,
-                                jobSchedulerCallback);
+                                jobSchedulerCallback,
+                                constraints: [
+                                  const RequiredNetworkType(requiredType: RequiredNetworkType.NETWORK_TYPE_UNMETERED),
+                                  const RequiresCharging(),
+                                  const RequiresStorageNotLow()
+                                ]
+                            );
                           } finally {
                             updatePendingJobs();
                           }
