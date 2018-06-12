@@ -22,9 +22,9 @@ In your project's `android/app/src/main` directory, open the `AndroidManifest.xm
 
 ```xml
 <service
-    android:exported="true"
+    android:exported="false"
     android:permission="android.permission.BIND_JOB_SERVICE"
-    android:name="io.gjg.androidjobscheduler.AndroidJobScheduler">
+    android:name="io.gjg.androidjobscheduler.AndroidJobScheduler" />
 ```
 
 ### Usage
@@ -66,6 +66,52 @@ void main() {
   await AndroidJobScheduler.cancelAllJobs();
 }
 ```
+
+#### Using other Plugins from inside your callback
+
+In order to use other Plugins from inside the Dart Callback, you'll need to enable the Scheduler to register with your Applications Main Plugin Registry. Do this by providing a custom Application Implementation in your Android Code:
+
+```java
+import io.flutter.app.FlutterApplication;
+import io.flutter.plugin.common.PluginRegistry;
+import io.flutter.plugins.GeneratedPluginRegistrant;
+import io.gjg.androidjobscheduler.AndroidJobScheduler;
+
+public class MainApplication extends FlutterApplication implements PluginRegistry.PluginRegistrantCallback {
+
+    @Override
+    public void registerWith(PluginRegistry pluginRegistry) {
+        GeneratedPluginRegistrant.registerWith(pluginRegistry);
+    }
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        AndroidJobScheduler.setPluginRegistrantCallback(this);
+    }
+}
+```
+
+Don't forget to reference your custom Application Implementation in `AndroidManifest.xml`.
+
+```xml
+...
+<application
+    android:name=".MainApplication">
+    ...
+</application>
+```
+
+## FAQ
+
+### I'm getting an IllegalArgumentException when trying to Schedule anything
+
+```bash
+E/MethodChannel#plugins.gjg.io/android_job_scheduler(31525): Failed to handle method call
+E/MethodChannel#plugins.gjg.io/android_job_scheduler(31525): java.lang.IllegalArgumentException: No such service ComponentInfo{com.example.dailelog/io.gjg.androidjobscheduler.AndroidJobScheduler}
+```
+
+You forgot adding the JobScheduler Service to your `AndroidManifest.xml`. Please do this by following the steps outlined above.
 
 For help getting started with Flutter, view our online
 [documentation](https://flutter.io/).

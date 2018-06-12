@@ -20,15 +20,15 @@ import io.flutter.view.FlutterNativeView;
 
 @TargetApi(Build.VERSION_CODES.M)
 public class AndroidJobScheduler extends JobService {
-    static PluginRegistry.PluginRegistrantCallback pluginRegistrantCallback;
-    static MethodChannel callbackMethodChannel;
-    static String TAG = AndroidJobScheduler.class.getSimpleName();
-    static String B_KEY_RESCHEDULE = "reschedule";
-    static String B_KEY_INTERVAL = "interval";
-    static String B_KEY_DART_CB = "callback";
-    static String B_KEY_ID = "id";
+    public static MethodChannel callbackMethodChannel;
+    private static PluginRegistry.PluginRegistrantCallback pluginRegistrantCallback;
+    private static String TAG = AndroidJobScheduler.class.getSimpleName();
+    private static String B_KEY_RESCHEDULE = "reschedule";
+    private static String B_KEY_INTERVAL = "interval";
+    private static String B_KEY_DART_CB = "callback";
+    private static String B_KEY_ID = "id";
 
-    static void scheduleEvery(Context context, Integer millis, String callback, Integer id) {
+    public static void scheduleEvery(Context context, Integer millis, String callback, Integer id) {
         JobInfo info;
         PersistableBundle bundle = new PersistableBundle();
         bundle.putString(B_KEY_DART_CB, callback);
@@ -53,21 +53,21 @@ public class AndroidJobScheduler extends JobService {
         scheduler.schedule(info);
     }
 
-    static void cancelJob(Context context, Integer jobId) {
+    public static void cancelJob(Context context, Integer jobId) {
         JobScheduler scheduler = context.getSystemService(JobScheduler.class);
         scheduler.cancel(jobId);
     }
 
-    static void cancelAllJobs(Context context) {
+    public static void cancelAllJobs(Context context) {
         JobScheduler scheduler = context.getSystemService(JobScheduler.class);
         scheduler.cancelAll();
     }
 
-    static void setPluginRegistrantCallback(PluginRegistry.PluginRegistrantCallback callback) {
+    public static void setPluginRegistrantCallback(PluginRegistry.PluginRegistrantCallback callback) {
         AndroidJobScheduler.pluginRegistrantCallback = callback;
     }
 
-    static boolean isApplicationRunning(Context context) {
+    private static boolean isApplicationRunning(Context context) {
         if (!(context instanceof FlutterApplication)) {
             return false;
         }
