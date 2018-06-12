@@ -12,7 +12,11 @@ import android.os.Build;
 import android.os.PersistableBundle;
 import android.util.Log;
 
+import java.lang.reflect.Field;
+
+import io.flutter.app.FlutterActivity;
 import io.flutter.app.FlutterApplication;
+import io.flutter.app.FlutterPluginRegistry;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.PluginRegistry;
 import io.flutter.view.FlutterMain;
@@ -75,6 +79,16 @@ public class AndroidJobScheduler extends JobService {
         return activity != null;
     }
 
+    private static void forceInjectActivity(FlutterPluginRegistry registry) {
+        try {
+            Field mActivity = registry.getClass().getDeclaredField("mActivity");
+            mActivity.setAccessible(true);
+            mActivity.set(registry, new FlutterActivity());
+        } catch (IllegalAccessException | NoSuchFieldException e) {
+            Log.w(TAG, "Reflection Failed");
+        }
+    }
+
     @Override
     public boolean onStartJob(JobParameters params) {
         PersistableBundle extras = params.getExtras();
@@ -86,6 +100,7 @@ public class AndroidJobScheduler extends JobService {
         } else {
             FlutterNativeView nativeView = new FlutterNativeView(context);
             if (AndroidJobScheduler.pluginRegistrantCallback != null) {
+                forceInjectActivity(nativeView.getPluginRegistry());
                 AndroidJobScheduler.pluginRegistrantCallback.registerWith(nativeView.getPluginRegistry());
             }
             nativeView.runFromBundle(FlutterMain.findAppBundlePath(context), null,
@@ -103,7 +118,7 @@ public class AndroidJobScheduler extends JobService {
 
     @Override
     public boolean onStopJob(JobParameters params) {
-        Log.d(AndroidJobScheduler.class.getSimpleName(), "onStopJob");
+        jobFinished(params, false);
         return false;
     }
 

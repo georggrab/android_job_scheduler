@@ -14,7 +14,7 @@ class MyApp extends StatefulWidget {
   _MyAppState createState() => new _MyAppState();
 }
 
-void yolo() async {
+void jobSchedulerCallback() async {
   // Search Logcat for Yolo to see the the Callback firing
   // when the app is not running.
   print('Yolo executing');
@@ -87,7 +87,7 @@ class _MyAppState extends State<MyApp> {
                           try {
                             jobIsInstalled =
                                 await AndroidJobScheduler.scheduleEvery(
-                                    const Duration(seconds: 10), 42, yolo);
+                                    const Duration(seconds: 10), 42, jobSchedulerCallback);
                           } finally {
                             setState(() {
                               _jobIsInstalled = jobIsInstalled == true;
@@ -106,6 +106,35 @@ class _MyAppState extends State<MyApp> {
                         },
                         icon: const Icon(Icons.delete),
                         label: Text('Uninstall Job')),
+                  ]),
+              new Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    new RaisedButton.icon(
+                        onPressed: () async {
+                          bool jobIsInstalled;
+                          try {
+                            jobIsInstalled =
+                            await AndroidJobScheduler.scheduleEvery(
+                                const Duration(seconds: 10), 43, jobSchedulerCallback);
+                          } finally {
+                            setState(() {
+                              _jobIsInstalled = jobIsInstalled == true;
+                            });
+                          }
+                        },
+                        icon: const Icon(Icons.check_box),
+                        label: Text('Install Geo Job')),
+                    new Container(width: 10.0,),
+                    new RaisedButton.icon(
+                        onPressed: () {
+                          AndroidJobScheduler.cancelJob(43);
+                          setState(() {
+                            _jobIsInstalled = false;
+                          });
+                        },
+                        icon: const Icon(Icons.delete),
+                        label: Text('Uninstall Geo Job')),
                   ]),
               new Divider(),
               new RaisedButton.icon(onPressed: () async {

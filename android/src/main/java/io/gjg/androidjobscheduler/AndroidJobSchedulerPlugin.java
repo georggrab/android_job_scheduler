@@ -8,6 +8,7 @@ import org.json.JSONException;
 
 import java.util.ArrayList;
 
+import io.flutter.app.FlutterPluginRegistry;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
