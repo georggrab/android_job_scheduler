@@ -71,6 +71,8 @@ void main() {
 
 In order to use other Plugins from inside the Dart Callback, you'll need to enable the Scheduler to register with your Applications Main Plugin Registry. Do this by providing a custom Application Implementation in your Android Code:
 
+**Warning!** Plugins generally have access to the `FlutterActivity`, in case they need access to any resources they may need from it. However, since we're running in a Job Context not inside an Activity, the Activity will be `null`. Some Plugins might not expect this and crash on initialization. Plugins that fundamentally need Activities to function will not work.
+
 ```java
 import io.flutter.app.FlutterApplication;
 import io.flutter.plugin.common.PluginRegistry;
@@ -103,6 +105,10 @@ Don't forget to reference your custom Application Implementation in `AndroidMani
 ```
 
 ## FAQ
+
+### My Callbacks won't work with Plugins
+
+One of the Plugins you're using is expecting to be run inside an Activity. Because there is no Activity when running in a Job Context, this will not work (see above).
 
 ### I'm getting an IllegalArgumentException when trying to Schedule anything
 
