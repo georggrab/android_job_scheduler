@@ -13,7 +13,7 @@ Then, in your `pubspec.yml`:
 ```yaml
 dependencies:
   ...
-  android_job_scheduler: ^0.0.1
+  android_job_scheduler: ^0.0.4
 ```
 
 ### Declare the JobScheduler Service in `AndroidManifest.xml`
@@ -76,7 +76,7 @@ void main() {
     await AndroidJobScheduler.scheduleEvery(
         const Duration(seconds: 10), iRunPeriodically, 43);
     
-    final List<AndroidJobInfo> pendingJobs = await AndroidJobScheduler.getAllPendingJobs
+    final List<AndroidJobInfo> pendingJobs = await AndroidJobScheduler.getAllPendingJobs();
     print(pendingJobs.map((AndroidJobInfo i) => i.id).toList().join(", ")); // 42, 43
 }
 ```
