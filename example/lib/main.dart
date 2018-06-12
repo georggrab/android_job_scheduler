@@ -35,7 +35,7 @@ Future<File> getCommonStateFile() async {
 }
 
 class _MyAppState extends State<MyApp> {
-  bool _jobIsInstalled;
+  List<int> _pendingJobs = new List<int>();
   int _timesCalled = 0;
 
   @override
@@ -43,6 +43,7 @@ class _MyAppState extends State<MyApp> {
     super.initState();
     initFileWatcher();
     updateCallBackTimesCalled();
+    updatePendingJobs();
   }
 
   initFileWatcher() async {
@@ -62,6 +63,15 @@ class _MyAppState extends State<MyApp> {
     });
   }
 
+  updatePendingJobs() async {
+    final jobs =
+        await AndroidJobScheduler.getAllPendingJobs();
+    setState(() {
+      _pendingJobs =
+          jobs.map((AndroidJobInfo i) => i.id).toList();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return new MaterialApp(
@@ -73,7 +83,9 @@ class _MyAppState extends State<MyApp> {
               child: new Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              new Text(_jobIsInstalled == null? 'Job installation failed!' : _jobIsInstalled? 'Job is installed!' : 'Job is not installed!'),
+              new Text(_pendingJobs.length == 0
+                  ? 'No Pending Jobs.'
+                  : 'Pending Jobs: ${_pendingJobs.join(', ')}'),
               new Text('Callback has been called '),
               new Text('$_timesCalled', textScaleFactor: 2.0),
               new Text('times.'),
@@ -83,26 +95,24 @@ class _MyAppState extends State<MyApp> {
                   children: <Widget>[
                     new RaisedButton.icon(
                         onPressed: () async {
-                          bool jobIsInstalled;
                           try {
-                            jobIsInstalled =
-                                await AndroidJobScheduler.scheduleEvery(
-                                    const Duration(seconds: 10), 42, jobSchedulerCallback);
+                            await AndroidJobScheduler.scheduleEvery(
+                                const Duration(seconds: 10),
+                                42,
+                                jobSchedulerCallback);
                           } finally {
-                            setState(() {
-                              _jobIsInstalled = jobIsInstalled == true;
-                            });
+                            updatePendingJobs();
                           }
                         },
                         icon: const Icon(Icons.check_box),
                         label: Text('Install Job')),
-                    new Container(width: 10.0,),
+                    new Container(
+                      width: 10.0,
+                    ),
                     new RaisedButton.icon(
                         onPressed: () {
                           AndroidJobScheduler.cancelJob(42);
-                          setState(() {
-                            _jobIsInstalled = false;
-                          });
+                          updatePendingJobs();
                         },
                         icon: const Icon(Icons.delete),
                         label: Text('Uninstall Job')),
@@ -112,43 +122,44 @@ class _MyAppState extends State<MyApp> {
                   children: <Widget>[
                     new RaisedButton.icon(
                         onPressed: () async {
-                          bool jobIsInstalled;
                           try {
-                            jobIsInstalled =
-                            await AndroidJobScheduler.scheduleEvery(
-                                const Duration(seconds: 10), 43, jobSchedulerCallback);
+                                await AndroidJobScheduler.scheduleEvery(
+                                    const Duration(seconds: 10),
+                                    43,
+                                    jobSchedulerCallback);
                           } finally {
-                            setState(() {
-                              _jobIsInstalled = jobIsInstalled == true;
-                            });
+                            updatePendingJobs();
                           }
                         },
                         icon: const Icon(Icons.check_box),
                         label: Text('Install Geo Job')),
-                    new Container(width: 10.0,),
+                    new Container(
+                      width: 10.0,
+                    ),
                     new RaisedButton.icon(
                         onPressed: () {
                           AndroidJobScheduler.cancelJob(43);
-                          setState(() {
-                            _jobIsInstalled = false;
-                          });
+                          updatePendingJobs();
                         },
                         icon: const Icon(Icons.delete),
                         label: Text('Uninstall Geo Job')),
                   ]),
               new Divider(),
-              new RaisedButton.icon(onPressed: () async {
-                final file = await getCommonStateFile();
-                if (await file.exists()) {
-                  await file.delete();
-                  await updateCallBackTimesCalled();
-                }
-              }, icon: const Icon(Icons.fast_rewind), label: const Text('Reset State')),
+              new RaisedButton.icon(
+                  onPressed: () async {
+                    final file = await getCommonStateFile();
+                    if (await file.exists()) {
+                      await file.delete();
+                      await updateCallBackTimesCalled();
+                    }
+                  },
+                  icon: const Icon(Icons.fast_rewind),
+                  label: const Text('Reset State')),
               new Container(
                 padding: EdgeInsets.all(20.0),
-                child: const Text('Close the App, wait a few secs, and see what happens!'),
+                child: const Text(
+                    'Close the App, wait a few secs, and see what happens!'),
               )
-              
             ],
           ))),
     );

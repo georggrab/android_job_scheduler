@@ -1,12 +1,16 @@
 package io.gjg.androidjobscheduler;
 
+import android.app.job.JobInfo;
 import android.content.Context;
 import android.os.Build;
+import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import io.flutter.app.FlutterPluginRegistry;
 import io.flutter.plugin.common.MethodChannel;
@@ -40,9 +44,7 @@ public class AndroidJobSchedulerPlugin implements MethodCallHandler {
             result.error("JobScheduler API is not available in API Level 20 and below.", "", null);
             return;
         }
-        if (call.method.equals("getPlatformVersion")) {
-            result.success("Android " + android.os.Build.VERSION.RELEASE);
-        } else if (call.method.equals("scheduleEvery")) {
+        if (call.method.equals("scheduleEvery")) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 final ArrayList<?> args = (ArrayList<?>) call.arguments;
                 final Integer every = (Integer) args.get(0);
@@ -58,6 +60,13 @@ public class AndroidJobSchedulerPlugin implements MethodCallHandler {
             AndroidJobScheduler.cancelJob(this.mContext, (Integer) args.get(0));
         } else if (call.method.equals("cancelAllJobs")) {
             AndroidJobScheduler.cancelAllJobs(this.mContext);
+        } else if (call.method.equals("getAllPendingJobs")) {
+            List<JobInfo> jobs = AndroidJobScheduler.getAllPendingJobs(this.mContext);
+            List<Integer> jobIds = new ArrayList<>();
+            for(JobInfo job : jobs) {
+                jobIds.add(job.getId());
+            }
+            result.success(jobIds);
         } else {
             result.notImplemented();
         }

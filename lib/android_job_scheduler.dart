@@ -2,6 +2,11 @@ import 'dart:async';
 
 import 'package:flutter/services.dart';
 
+class AndroidJobInfo {
+  int id;
+  AndroidJobInfo(this.id);
+}
+
 class AndroidJobScheduler {
   static const MethodChannel _channel =
       const MethodChannel('plugins.gjg.io/android_job_scheduler');
@@ -35,6 +40,11 @@ class AndroidJobScheduler {
 
   static Future<void> cancelAllJobs() async {
     return await _channel.invokeMethod('cancelAllJobs', []);
+  }
+
+  static Future<List<AndroidJobInfo>> getAllPendingJobs() async {
+    return (await _channel.invokeMethod('getAllPendingJobs', []) as List<dynamic>)
+      .cast<int>().map((int id) => new AndroidJobInfo(id)).toList();
   }
 }
 

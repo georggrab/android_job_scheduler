@@ -67,6 +67,20 @@ void main() {
 }
 ```
 
+#### Get Pending Jobs
+```dart
+void main() {
+    ...
+    await AndroidJobScheduler.scheduleEvery(
+        const Duration(seconds: 10), iRunPeriodically, 42);
+    await AndroidJobScheduler.scheduleEvery(
+        const Duration(seconds: 10), iRunPeriodically, 43);
+    
+    final List<AndroidJobInfo> pendingJobs = await AndroidJobScheduler.getAllPendingJobs
+    print(pendingJobs.map((AndroidJobInfo i) => i.id).toList().join(", ")); // 42, 43
+}
+```
+
 #### Using other Plugins from inside your callback
 
 In order to use other Plugins from inside the Dart Callback, you'll need to enable the Scheduler to register with your Applications Main Plugin Registry. Do this by providing a custom Application Implementation in your Android Code:

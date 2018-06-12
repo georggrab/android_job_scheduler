@@ -13,6 +13,7 @@ import android.os.PersistableBundle;
 import android.util.Log;
 
 import java.lang.reflect.Field;
+import java.util.List;
 
 import io.flutter.app.FlutterActivity;
 import io.flutter.app.FlutterApplication;
@@ -71,22 +72,17 @@ public class AndroidJobScheduler extends JobService {
         AndroidJobScheduler.pluginRegistrantCallback = callback;
     }
 
+    public static List<JobInfo> getAllPendingJobs(Context context) {
+        JobScheduler scheduler = context.getSystemService(JobScheduler.class);
+        return scheduler.getAllPendingJobs();
+    }
+
     private static boolean isApplicationRunning(Context context) {
         if (!(context instanceof FlutterApplication)) {
             return false;
         }
         Activity activity = ((FlutterApplication) context).getCurrentActivity();
         return activity != null;
-    }
-
-    private static void forceInjectActivity(FlutterPluginRegistry registry) {
-        try {
-            Field mActivity = registry.getClass().getDeclaredField("mActivity");
-            mActivity.setAccessible(true);
-            mActivity.set(registry, new FlutterActivity());
-        } catch (IllegalAccessException | NoSuchFieldException e) {
-            Log.w(TAG, "Reflection Failed");
-        }
     }
 
     @Override
@@ -100,7 +96,6 @@ public class AndroidJobScheduler extends JobService {
         } else {
             FlutterNativeView nativeView = new FlutterNativeView(context);
             if (AndroidJobScheduler.pluginRegistrantCallback != null) {
-                forceInjectActivity(nativeView.getPluginRegistry());
                 AndroidJobScheduler.pluginRegistrantCallback.registerWith(nativeView.getPluginRegistry());
             }
             nativeView.runFromBundle(FlutterMain.findAppBundlePath(context), null,
