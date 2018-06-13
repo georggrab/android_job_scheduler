@@ -20,7 +20,7 @@ class AndroidJobScheduler {
     return version;
   }
 
-  static Future<bool> scheduleEvery(Duration every, int id, dynamic Function() function, {List<JobConstraint> constraints}) async {
+  static Future<bool> scheduleEvery(Duration every, int id, dynamic Function() function, {persistentAcrossReboots = false, List<JobConstraint> constraints}) async {
     _channel.setMethodCallHandler((MethodCall call) {
       switch (call.method) {
         case 'firedWhileApplicationRunning':
@@ -34,6 +34,11 @@ class AndroidJobScheduler {
     if (functionName == null) {
       throw 'scheduleEvery failed: The supplied function can only be a top level function or a static method! Class members'
             ' or Closures are not allowed.';
+    }
+    if (constraints == null && persistentAcrossReboots) {
+      constraints = [ const PersistentAcrossReboots() ];
+    } else if (constraints != null && persistentAcrossReboots) {
+      constraints.add(const PersistentAcrossReboots());
     }
     return await _channel.invokeMethod('scheduleEvery', [every.inMilliseconds, functionName, id, serializeConstraints(constraints)]);
   }

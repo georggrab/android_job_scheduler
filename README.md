@@ -81,6 +81,32 @@ void main() {
 }
 ```
 
+### Persistent Across Reboots.
+
+You can specify that your job is persistent across Reboots. You'll need an additional Permission in your app's `android/src/main/AndroidManifest.xml`, though:
+```xml
+<manifest ...>
+  ...
+  
+  <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+  
+  <application>
+    ...
+  </application>
+</manifest>
+``` 
+
+After you added the Permission, **restart the test device or uninstall your application!** Otherwise you will still get a permission error. This is because the JobScheduler holds a cache of which App Uids hold permission, which needs to be invalidated by one of these actions.
+After you got that sorted out, you can specify your Job to be persistent:
+
+```dart
+await AndroidJobScheduler.scheduleEvery(
+   ...
+   persistentAcrossReboots: true,
+   ...
+]);
+``` 
+
 ### Conditional Job Execution
 Android's JobScheduler allows us to execute Jobs conditionally. 
 
@@ -169,11 +195,20 @@ Don't forget to reference your custom Application Implementation in `AndroidMani
 
 One of the Plugins you're using is expecting to be run inside an Activity. Because there is no Activity when running in a Job Context, this will not work (see above).
 
+### I'm getting an Error telling be I need additional Permissions when scheduling a Job
+```bash
+E/flutter (25871): PlatformException(error, Error: requested job be persisted without holding RECEIVE_BOOT_COMPLETED permission., null)
+E/flutter (25871): #0      StandardMethodCodec.decodeEnvelope (package:flutter/src/services/message_codecs.dart:547:7)
+```
+
+You specified `persistentAcrossReboots: true` when scheduling the Job, but you didn't declare the appropriate Permission in the Android Manifest. See above for what to add to the Manifest. If you did declare the Permission **make sure you reboot your test device or uninstall your application, due to the reasons outlined above**.jj
+
+
 ### I'm getting an IllegalArgumentException when trying to Schedule anything
 
 ```bash
 E/MethodChannel#plugins.gjg.io/android_job_scheduler(31525): Failed to handle method call
-E/MethodChannel#plugins.gjg.io/android_job_scheduler(31525): java.lang.IllegalArgumentException: No such service ComponentInfo{com.example.dailelog/io.gjg.androidjobscheduler.AndroidJobScheduler}
+E/MethodChannel#plugins.gjg.io/android_job_scheduler(31525): java.lang.IllegalArgumentException: No such service ComponentInfo{io.gjg.testapp/io.gjg.androidjobscheduler.AndroidJobScheduler}
 ```
 
 You forgot adding the JobScheduler Service to your `AndroidManifest.xml`. Please do this by following the steps outlined above.

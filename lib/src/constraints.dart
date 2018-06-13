@@ -25,11 +25,10 @@ class BackoffCriteria extends JobConstraint {
 }
 
 class PersistentAcrossReboots extends JobConstraint {
-  final bool isPersistent;
-  const PersistentAcrossReboots({this.isPersistent});
+  const PersistentAcrossReboots();
 
   Map<String, dynamic> serialize() {
-    return { "isPersistent": this.isPersistent };
+    return {};
   }
 
   String getName() => "PersistentAcrossReboots";

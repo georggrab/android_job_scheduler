@@ -100,6 +100,7 @@ class _MyAppState extends State<MyApp> {
                                 const Duration(seconds: 1),
                                 42,
                                 jobSchedulerCallback,
+                                persistentAcrossReboots: true,
                                 constraints: [
                                   const RequiredNetworkType(requiredType: RequiredNetworkType.NETWORK_TYPE_UNMETERED),
                                   const RequiresCharging(),
