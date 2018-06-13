@@ -1,6 +1,6 @@
 name: android_job_scheduler
 description: An Android specific Flutter Plugin providing Bindings to Android's Job Scheduler API.
-version: 0.0.5
+version: 0.0.6
 author: Georg Grab <g.j.grab.dev@gmail.com>
 homepage: https://github.com/talkdirty/android_job_scheduler
 

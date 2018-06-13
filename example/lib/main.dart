@@ -102,7 +102,6 @@ class _MyAppState extends State<MyApp> {
                                 jobSchedulerCallback,
                                 persistentAcrossReboots: true,
                                 constraints: [
-                                  const RequiredNetworkType(requiredType: RequiredNetworkType.NETWORK_TYPE_UNMETERED),
                                   const RequiresCharging(),
                                   const RequiresStorageNotLow()
                                 ]
@@ -133,7 +132,8 @@ class _MyAppState extends State<MyApp> {
                                 await AndroidJobScheduler.scheduleEvery(
                                     const Duration(seconds: 10),
                                     43,
-                                    jobSchedulerCallback);
+                                    jobSchedulerCallback,
+                                persistentAcrossReboots: true);
                           } finally {
                             updatePendingJobs();
                           }

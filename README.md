@@ -13,7 +13,7 @@ Then, in your `pubspec.yml`:
 ```yaml
 dependencies:
   ...
-  android_job_scheduler: ^0.0.4
+  android_job_scheduler: ^0.0.6
 ```
 
 ### Declare the JobScheduler Service in `AndroidManifest.xml`
