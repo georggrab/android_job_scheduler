@@ -11,6 +11,12 @@ class AndroidJobInfo {
   AndroidJobInfo(this.id);
 }
 
+class _ScheduleOnceConstraint extends JobConstraint {
+  const _ScheduleOnceConstraint();
+  String getName() => "ScheduleOnceConstraint";
+  Map<String, dynamic> serialize () => {};
+}
+
 class AndroidJobScheduler {
   static const MethodChannel _channel =
       const MethodChannel('plugins.gjg.io/android_job_scheduler');
@@ -20,7 +26,7 @@ class AndroidJobScheduler {
     return version;
   }
 
-  static Future<bool> scheduleEvery(Duration every, int id, dynamic Function() function, {persistentAcrossReboots = false, List<JobConstraint> constraints}) async {
+  static Future<bool> _schedule(Duration every, int id, dynamic Function() function, {persistentAcrossReboots = false, List<JobConstraint> constraints}) async {
     _channel.setMethodCallHandler((MethodCall call) {
       switch (call.method) {
         case 'firedWhileApplicationRunning':
@@ -33,7 +39,7 @@ class AndroidJobScheduler {
     final String functionName = _getFunctionName(function);
     if (functionName == null) {
       throw 'scheduleEvery failed: The supplied function can only be a top level function or a static method! Class members'
-            ' or Closures are not allowed.';
+          ' or Closures are not allowed.';
     }
     if (constraints == null && persistentAcrossReboots) {
       constraints = [ const PersistentAcrossReboots() ];
@@ -41,6 +47,19 @@ class AndroidJobScheduler {
       constraints.add(const PersistentAcrossReboots());
     }
     return await _channel.invokeMethod('scheduleEvery', [every.inMilliseconds, functionName, id, serializeConstraints(constraints)]);
+  }
+
+  static Future<bool> scheduleOnce(Duration once, int id, dynamic Function() function, {persistentAcrossReboots = false, List<JobConstraint> constraints}) async {
+    if (constraints == null) {
+      constraints = [ const _ScheduleOnceConstraint() ];
+    } else {
+      constraints.add(const _ScheduleOnceConstraint());
+    }
+    return _schedule(once, id, function, persistentAcrossReboots: persistentAcrossReboots, constraints: constraints);
+  }
+
+  static Future<bool> scheduleEvery(Duration every, int id, dynamic Function() function, {persistentAcrossReboots = false, List<JobConstraint> constraints}) async {
+    return _schedule(every, id, function, persistentAcrossReboots: persistentAcrossReboots, constraints: constraints);
   }
 
   static Future<void> cancelJob(int id) async {

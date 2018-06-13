@@ -19,6 +19,7 @@ import io.flutter.view.FlutterMain;
 import io.flutter.view.FlutterNativeView;
 
 import static io.gjg.androidjobscheduler.AndroidJobSchedulerUtils.B_KEY_DART_CB;
+import static io.gjg.androidjobscheduler.AndroidJobSchedulerUtils.B_KEY_SCHEDULE_ONCE;
 
 @TargetApi(Build.VERSION_CODES.M)
 public class AndroidJobScheduler extends JobService {
@@ -75,7 +76,9 @@ public class AndroidJobScheduler extends JobService {
             nativeView.runFromBundle(FlutterMain.findAppBundlePath(context), null,
                     extras.getString(B_KEY_DART_CB), true);
         }
-        AndroidJobScheduler.scheduleEvery(getApplicationContext(), AndroidJobSchedulerUtils.persistableBundleToJobInfo(extras));
+        if (!extras.containsKey(B_KEY_SCHEDULE_ONCE)) {
+            AndroidJobScheduler.scheduleEvery(getApplicationContext(), AndroidJobSchedulerUtils.persistableBundleToJobInfo(extras));
+        }
         jobFinished(params, false);
         return true;
     }

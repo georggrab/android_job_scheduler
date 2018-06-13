@@ -94,6 +94,7 @@ public class AndroidJobSchedulerUtils {
     public static final String B_KEY_COMPONENT_NAME = "componentName";
     public static final String B_KEY_COMPONENT_PKG = "componentPkg";
     public static final String B_KEY_DEVICE_IDLE = "RequiresDeviceIdle";
+    public static final String B_KEY_SCHEDULE_ONCE = "ScheduleOnceConstraint";
 
     public static final String B_KEY_NETWORK_TYPE = "RequiresNetworkType";
     public static final String B_INNER_REQUIRED_NETWORK = "requiredType";

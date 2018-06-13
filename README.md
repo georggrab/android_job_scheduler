@@ -13,7 +13,7 @@ Then, in your `pubspec.yml`:
 ```yaml
 dependencies:
   ...
-  android_job_scheduler: ^0.0.6
+  android_job_scheduler: ^0.0.7
 ```
 
 ### Declare the JobScheduler Service in `AndroidManifest.xml`
@@ -27,13 +27,15 @@ In your project's `android/app/src/main` directory, open the `AndroidManifest.xm
     android:name="io.gjg.androidjobscheduler.AndroidJobScheduler" />
 ```
 
-### Usage
+## Usage
 
 ```dart
 import 'package:android_job_scheduler/android_job_scheduler.dart';
 ```
 
-#### Installing Jobs
+### Installing Jobs
+
+#### Periodic Jobs
 
 ```dart
 // This MUST be a top level Function or a Static Class Member. It may not be a Class Method
@@ -55,7 +57,15 @@ void main() {
 }
 ```
 
-#### Canceling Jobs
+#### One-shot Jobs
+You may schedule a Job to be run once, at some point in the Future. The Job will run even if the user closes the App in the meantime. If you reschedule the Job in the Period where it is not yet executed (by specifying the same JobId), the JobScheduler will restart the Job Execution Timeout, without executing the Job twice.
+```dart
+await AndroidJobScheduler.scheduleOnce(
+  const Duration(seconds: 10), iRunOnlyOnceInTenSecs, 44
+);
+```
+
+### Canceling Jobs
 
 ```dart
 void main() {
@@ -67,7 +77,7 @@ void main() {
 }
 ```
 
-#### Get Pending Jobs
+### Get Pending Jobs
 ```dart
 void main() {
     ...
@@ -81,7 +91,7 @@ void main() {
 }
 ```
 
-### Persistent Across Reboots.
+### Reboot Persistence
 
 You can specify that your job is persistent across Reboots. You'll need an additional Permission in your app's `android/src/main/AndroidManifest.xml`, though:
 ```xml

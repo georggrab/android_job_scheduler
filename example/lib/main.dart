@@ -79,6 +79,13 @@ class _MyAppState extends State<MyApp> {
           appBar: new AppBar(
             title: new Text('Android Job Scheduler'),
           ),
+          floatingActionButton: new FloatingActionButton(
+              child: const Icon(Icons.refresh),
+              onPressed: () {
+                updatePendingJobs();
+              }
+
+          ),
           body: new Center(
               child: new Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -150,6 +157,34 @@ class _MyAppState extends State<MyApp> {
                         },
                         icon: const Icon(Icons.delete),
                         label: Text('Uninstall Geo Job')),
+                  ]),
+              new Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    new RaisedButton.icon(
+                        onPressed: () async {
+                          try {
+                            await AndroidJobScheduler.scheduleOnce(
+                                const Duration(seconds: 10),
+                                44,
+                                jobSchedulerCallback,
+                                persistentAcrossReboots: true);
+                          } finally {
+                            updatePendingJobs();
+                          }
+                        },
+                        icon: const Icon(Icons.check_box),
+                        label: Text('Schedule Once in 10s')),
+                    new Container(
+                      width: 10.0,
+                    ),
+                    new RaisedButton.icon(
+                        onPressed: () {
+                          AndroidJobScheduler.cancelJob(44);
+                          updatePendingJobs();
+                        },
+                        icon: const Icon(Icons.delete),
+                        label: Text('Unschedule')),
                   ]),
               new Divider(),
               new RaisedButton.icon(
