@@ -87,7 +87,6 @@ import java.util.Map;
 @TargetApi(Build.VERSION_CODES.M)
 public class AndroidJobSchedulerUtils {
     private static final String TAG = AndroidJobSchedulerUtils.class.getSimpleName();
-    public static final String B_KEY_FLEX_MILLIS = "flexMillis";
     public static final String B_KEY_RESCHEDULE = "reschedule";
     public static final String B_KEY_INTERVAL = "interval";
     public static final String B_KEY_DART_CB = "callback";
@@ -111,13 +110,11 @@ public class AndroidJobSchedulerUtils {
         final Integer every = (Integer) args.get(0);
         final String funcCallback = (String) args.get(1);
         final Integer id = (Integer) args.get(2);
-        final Integer flexMillis = (Integer) args.get(3);
-        final Map<String, Map<String, Object>> constraints = (Map<String, Map<String, Object>>) args.get(4);
+        final Map<String, Map<String, Object>> constraints = (Map<String, Map<String, Object>>) args.get(3);
         PersistableBundle job = new PersistableBundle();
         job.putString(B_KEY_RESCHEDULE, funcCallback);
         job.putInt(B_KEY_ID, id);
         job.putInt(B_KEY_INTERVAL, every);
-        job.putInt(B_KEY_FLEX_MILLIS, flexMillis);
         job.putString(B_KEY_DART_CB, funcCallback);
         job.putString(B_KEY_COMPONENT_PKG, name.getPackageName());
         job.putString(B_KEY_COMPONENT_NAME, name.getClassName());
