@@ -231,4 +231,4 @@ Most importantly it uses JobScheduler API instead of the AlarmManager API.
 
 The main reason this plugin exists is that at the moment, android_alarm_manager is not working with the latest Flutter SDK Version. See [this issue](https://github.com/flutter/flutter/issues/17566). If there is Interest from the Flutter Devs, I'll merge the changes relevant for fixing this issue back into android_alarm_manager. 
 
-Apart from that, the JobScheduler API offers a lot more Flexibility than the AlarmManager API for scheduling Jobs. For example, we can tell this API to only schedule Jobs when the Device is Charging, or when a unmetered Network Connection is available. However, none of these features are exposed here atm, though they could be pursued in the Future.
+Apart from that, the JobScheduler API offers a lot more Flexibility than the AlarmManager API for scheduling Jobs. For example, we can tell this API to only schedule Jobs when the Device is Charging, or when a unmetered Network Connection is available.
