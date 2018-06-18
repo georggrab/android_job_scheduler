@@ -3,7 +3,7 @@
 @implementation AndroidJobSchedulerPlugin
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
   FlutterMethodChannel* channel = [FlutterMethodChannel
-      methodChannelWithName:@"android_job_scheduler"
+      methodChannelWithName:@"plugins.gjg.io/android_job_scheduler"
             binaryMessenger:[registrar messenger]];
   AndroidJobSchedulerPlugin* instance = [[AndroidJobSchedulerPlugin alloc] init];
   [registrar addMethodCallDelegate:instance channel:channel];

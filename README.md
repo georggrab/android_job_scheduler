@@ -232,3 +232,14 @@ Most importantly it uses JobScheduler API instead of the AlarmManager API.
 The main reason this plugin exists is that at the moment, android_alarm_manager is not working with the latest Flutter SDK Version. See [this issue](https://github.com/flutter/flutter/issues/17566). If there is Interest from the Flutter Devs, I'll merge the changes relevant for fixing this issue back into android_alarm_manager. 
 
 Apart from that, the JobScheduler API offers a lot more Flexibility than the AlarmManager API for scheduling Jobs. For example, we can tell this API to only schedule Jobs when the Device is Charging, or when a unmetered Network Connection is available.
+
+### How is this Plugin behaving if run on iOS?
+Your App will work on iOS and Compile, but a `MissingPluginException` will be thrown when you try to call any of `android_job_scheduler`'s methods. You may Schedule Jobs only on the Android Side by doing something like:
+
+```dart
+if (Platform.isAndroid) {
+    await AndroidJobScheduler...;
+}
+```
+
+Unfortunately, the way jobs are scheduled on iOS is vastly different to how it's done on Android, so iOS support will never be coming to this Plugin.
