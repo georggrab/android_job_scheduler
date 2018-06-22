@@ -85,6 +85,7 @@ import java.util.Map;
 //}
 
 @TargetApi(Build.VERSION_CODES.M)
+@SuppressWarnings("unchecked")
 public class AndroidJobSchedulerUtils {
     private static final String TAG = AndroidJobSchedulerUtils.class.getSimpleName();
     public static final String B_KEY_RESCHEDULE = "reschedule";
