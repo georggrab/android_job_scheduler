@@ -53,7 +53,7 @@ void main() {
         // For every distinct Job you wish to create, set a new JobId.
         // Calling this Function twice with the same JobId will have no effect.
         await AndroidJobScheduler.scheduleEvery(
-            const Duration(seconds: 10), iRunPeriodically, 42);
+            const Duration(seconds: 10), 42, iRunPeriodically);
 }
 ```
 
@@ -61,7 +61,7 @@ void main() {
 You may schedule a Job to be run once, at some point in the Future. The Job will run even if the user closes the App in the meantime. If you reschedule the Job in the Period where it is not yet executed (by specifying the same JobId), the JobScheduler will restart the Job Execution Timeout, without executing the Job twice.
 ```dart
 await AndroidJobScheduler.scheduleOnce(
-  const Duration(seconds: 10), iRunOnlyOnceInTenSecs, 44
+  const Duration(seconds: 10), 44, iRunOnlyOnceInTenSecs
 );
 ```
 
@@ -82,9 +82,9 @@ void main() {
 void main() {
     ...
     await AndroidJobScheduler.scheduleEvery(
-        const Duration(seconds: 10), iRunPeriodically, 42);
+        const Duration(seconds: 10), 42, iRunPeriodically);
     await AndroidJobScheduler.scheduleEvery(
-        const Duration(seconds: 10), iRunPeriodically, 43);
+        const Duration(seconds: 10), 43, iRunPeriodically);
     
     final List<AndroidJobInfo> pendingJobs = await AndroidJobScheduler.getAllPendingJobs();
     print(pendingJobs.map((AndroidJobInfo i) => i.id).toList().join(", ")); // 42, 43
@@ -123,7 +123,7 @@ Android's JobScheduler allows us to execute Jobs conditionally.
 #### Only execute when Device is charging
 ```dart
 await AndroidJobScheduler.scheduleEvery(
-    const Duration(seconds: 10), iRunPeriodically, 42,
+    const Duration(seconds: 10), 42, iRunPeriodically
     constraints: [
           const RequiresCharging(),
 ]);
@@ -132,7 +132,7 @@ await AndroidJobScheduler.scheduleEvery(
 #### Only execute with a certain Network connectivity State
 ```dart
 await AndroidJobScheduler.scheduleEvery(
-    const Duration(seconds: 10), iRunPeriodically, 42,
+    const Duration(seconds: 10), 42, iRunPeriodically,
     constraints: [
           const RequiredNetworkType(requiredType: RequiredNetworkType.NETWORK_TYPE_CELLULAR),
 ]);
@@ -141,7 +141,7 @@ await AndroidJobScheduler.scheduleEvery(
 #### Only execute if not on low Storage condition
 ```dart
 await AndroidJobScheduler.scheduleEvery(
-    const Duration(seconds: 10), iRunPeriodically, 42,
+    const Duration(seconds: 10), 42, iRunPeriodically,
     constraints: [
           const RequiresStorageNotLow()
 ]);
@@ -154,7 +154,7 @@ Of course, you can also combine Constraints.
 // the Network connection is unmetered,
 // and we have enough storage
 await AndroidJobScheduler.scheduleEvery(
-    const Duration(seconds: 10), downloadTonsOfData, 42,
+    const Duration(seconds: 10), 42, downloadTonsOfData,
     constraints: [
           const RequiredNetworkType(requiredType: RequiredNetworkType.NETWORK_TYPE_UNMETERED),
           const RequiresCharging(),
