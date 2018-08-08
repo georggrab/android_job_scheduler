@@ -57,7 +57,7 @@ public class AndroidJobScheduler extends JobService {
             return false;
         }
         Activity activity = ((FlutterApplication) context).getCurrentActivity();
-        return activity != null;
+        return activity != null && !activity.isDestroyed();
     }
 
     @Override
