@@ -1,5 +1,7 @@
 # android_job_scheduler
 
+*This plugin is currently unmaintained. Do not use it. If you are interested in continuing to maintain this plugin, please contact me directly.*
+
 Schedule Jobs using Android's JobScheduler API. This is very much Work in progress. Much of this Plugin is based on the [android_alarm_manager](https://github.com/flutter/plugins/tree/master/packages/android_alarm_manager/) Plugin.
 
 ## Getting Started
